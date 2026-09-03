@@ -1,138 +1,152 @@
 /**
- * RAS® セッション申込フォーム 自動化スクリプト
+ * RAS®︎ 体験・無料相談 お申し込みフォーム 自動化スクリプト
  *
  *  1. 申込があると、申込者へ自動返信メールを送る
- *  2. 希望日時を読み取り、Googleカレンダーに予定を作成する
- *  3. 主催者にも通知メールを送る（日時が読み取れない場合は「要確認」として通知）
+ *  2. 希望日時を読み取り、Googleカレンダーに「仮」の予定を作成する
+ *  3. 主催者（AKEMI）に通知メールを送る
  *
+ * このフォームの希望日時は自由記述（第3希望まで）のため、
+ * 「9月10日 午後」「平日午前中」といった曖昧な回答が前提です。
+ * そこで、読み取れた確度に応じて次の3通りでカレンダーに入れます。
+ *
+ *   時刻まで読めた  → その時刻に【仮】予定
+ *   日付だけ読めた  → その日に終日【仮・時刻未定】予定
+ *   何も読めない    → 申込日に終日【要日程調整】予定（取りこぼし防止）
+ *
+ * いずれも「仮」です。日程確定後にご自身で本予定へ直してください。
  * 設置手順は README.md を参照。
- * 設問名が変わっても動くよう、キーワードで項目を自動判別しています。
  */
 
 // ===================== 設定 =====================
 var CONFIG = {
-  // 予定を入れるカレンダーID（Googleカレンダーの「設定と共有」で確認できます）
+  // 予定を入れるカレンダーID
   CALENDAR_ID: 'xakemix789@gmail.com',
 
-  // 主催者（通知メールの宛先。空にすると通知しません）
+  // 申込通知の宛先（空にすると通知しません）
   OWNER_EMAIL: 'xakemix789@gmail.com',
 
   // 自動返信メールの差出人名
-  SENDER_NAME: 'RAS® 及川明美',
+  SENDER_NAME: 'RAS®︎×東北 AKEMI',
 
   // 返信先アドレス（空ならスクリプト実行者のアドレス）
-  REPLY_TO: '',
+  REPLY_TO: 'xakemix789@gmail.com',
 
   // セッションの所要時間（分）
-  SESSION_MINUTES: 60,
+  SESSION_MINUTES: 90,
 
-  // 日付だけで時刻が取れなかったときに仮置きする開始時刻（時, 分）
+  // 「午前」「午後」などの時間帯表現を時刻に割り当てる（24時間表記）
+  SLOT_HOURS: { '午前': 10, '朝': 10, '昼': 12, '午後': 14, '夕方': 17, '夕': 17, '夜': 19 },
+
+  // 日付だけ読めたときに使う仮の開始時刻
   FALLBACK_HOUR: 10,
   FALLBACK_MINUTE: 0,
 
-  // 予定に申込者をゲストとして招待するか（trueにするとGoogleから招待メールが届きます）
+  // 予定に申込者をゲスト追加するか（trueだとGoogleから招待メールが届きます）
   INVITE_APPLICANT: false,
 
-  // 予定のリマインダー（分前）。空配列ならカレンダー既定値
+  // 予定のリマインダー（分前）
   REMINDER_MINUTES: [1440, 60],
 
-  // 予定タイトルの接頭辞
-  EVENT_PREFIX: '【RAS体験】',
+  // 「要日程調整」予定のリマインダー（分前）
+  TODO_REMINDER_MINUTES: [0],
 
-  // タイムゾーン
   TIMEZONE: 'Asia/Tokyo'
 };
 
-// 項目を自動判別するためのキーワード（上から順に照合）
+/**
+ * 設問の自動判別に使うキーワード。
+ * 2026年9月時点の実際の設問名に合わせてあります。
+ * フォームの設問名を変えた場合は、ここに1語足すだけで追従できます。
+ */
 var FIELD_KEYWORDS = {
-  email:   ['メールアドレス', 'メール', 'mail', 'e-mail'],
-  name:    ['お名前', '氏名', 'name', 'ご芳名'],
-  kana:    ['フリガナ', 'ふりがな', 'カナ', 'よみ'],
-  phone:   ['電話', 'tel', '携帯', 'phone'],
-  date1:   ['第1希望', '第一希望', '希望日', '希望日時', 'ご希望の日', '日程'],
-  date2:   ['第2希望', '第二希望'],
-  date3:   ['第3希望', '第三希望'],
-  time:    ['希望時間', '時間帯', '開始時刻', '時刻'],
-  menu:    ['メニュー', 'コース', 'セッション内容', '種類', 'ご希望のセッション'],
-  method:  ['オンライン', '対面', '形式', 'zoom', '方法', '会場'],
-  note:    ['ご質問', 'ご要望', '備考', 'メッセージ', '相談内容', 'お悩み', '自由記述']
+  email:   ['メールアドレス', 'メール', 'mail'],
+  name:    ['お名前', '氏名', 'name'],
+  kana:    ['なまえ', 'ふりがな', 'フリガナ', 'カナ'],
+  menu:    ['どちらか', 'お選びください', 'メニュー', 'コース', 'セッション内容'],
+  agree:   ['同意', 'キャンセルポリシー', '注意事項'],
+  method:  ['実施方法', 'オンライン', '形式', '方法', '会場'],
+  dates:   ['希望日時', '希望日', '日時', '日程'],
+  note:    ['その他', 'お問い合わせ', 'ご質問', 'ご要望', '備考', '相談内容'],
+  phone:   ['電話', 'tel', '携帯']
 };
 
 // ===================== 初回セットアップ =====================
 /**
  * ★ 最初に1回だけ手動で実行してください。
- * ★ 必ず、カレンダーとGmailを使わせたいアカウントでログインした状態で実行すること。
- *   （トリガーは実行した人の権限で動くため、そのアカウントのカレンダーに予定が入り、
- *     そのアカウントのGmailから返信が送られます）
+ * ★ 必ず xakemix789@gmail.com でログインした状態で実行すること。
+ *   トリガーは実行した人の権限で動くため、そのアカウントのカレンダーに予定が入り、
+ *   そのアカウントのGmailから自動返信が送られます。
  */
 function setup() {
   var form = FormApp.getActiveForm();
 
-  // 既存の同名トリガーを消してから作り直す（二重送信の防止）
   var triggers = ScriptApp.getProjectTriggers();
   for (var i = 0; i < triggers.length; i++) {
     if (triggers[i].getHandlerFunction() === 'onFormSubmit') {
-      ScriptApp.deleteTrigger(triggers[i]);
+      ScriptApp.deleteTrigger(triggers[i]);   // 二重送信の防止
     }
   }
 
-  ScriptApp.newTrigger('onFormSubmit')
-    .forForm(form)
-    .onFormSubmit()
-    .create();
+  ScriptApp.newTrigger('onFormSubmit').forForm(form).onFormSubmit().create();
 
-  // カレンダーに触れるか事前確認
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
-  var calName = cal ? cal.getName() : '★取得できませんでした（CALENDAR_IDと共有設定を確認してください）';
-
-  Logger.log('セットアップ完了。\nフォーム: %s\nカレンダー: %s\n実行アカウント: %s',
-    form.getTitle(), calName, Session.getEffectiveUser().getEmail());
+  Logger.log('セットアップ完了\nフォーム: %s\nカレンダー: %s\n実行アカウント: %s',
+    form.getTitle(),
+    cal ? cal.getName() : '★取得できません（CALENDAR_IDと共有設定を確認してください）',
+    Session.getEffectiveUser().getEmail());
 }
 
-/** 設問の一覧と自動判別の結果をログに出す確認用関数（任意） */
+/** 設問名と自動判別の結果をログに出す確認用。設置後に一度実行しておくと安心です。 */
 function debugFields() {
   var items = FormApp.getActiveForm().getItems();
-  var titles = [];
+  var dummy = {}, list = [];
   for (var i = 0; i < items.length; i++) {
-    titles.push('[' + items[i].getType() + '] ' + items[i].getTitle());
+    list.push('[' + items[i].getType() + '] ' + items[i].getTitle());
+    dummy[items[i].getTitle()] = '';
   }
-  Logger.log('■ フォームの設問一覧\n' + titles.join('\n'));
-
-  var dummy = {};
-  for (var j = 0; j < items.length; j++) dummy[items[j].getTitle()] = '';
   var picked = {};
   for (var key in FIELD_KEYWORDS) picked[key] = pickField_(dummy, FIELD_KEYWORDS[key]) || '(該当なし)';
-  Logger.log('■ 自動判別の結果\n' + JSON.stringify(picked, null, 2));
+  Logger.log('■ 設問一覧\n' + list.join('\n') + '\n\n■ 自動判別\n' + JSON.stringify(picked, null, 2));
+}
+
+/** 日時の読み取りだけを試すテスト用。実際の回答文を貼って確認できます。 */
+function debugParse() {
+  var samples = [
+    '9月10日 午後、9月12日 午前中、平日午前中',
+    '第1希望 2026/09/10 14:00\n第2希望 9/12 10:30\n第3希望 いつでも',
+    '平日の夜であればいつでも大丈夫です'
+  ];
+  for (var i = 0; i < samples.length; i++) {
+    var c = extractCandidates_(samples[i]);
+    var out = [];
+    for (var j = 0; j < c.length; j++) {
+      out.push(c[j].raw + ' → ' + (c[j].date ? formatWhen_(c[j].date, c[j].precision) : '読み取り不可'));
+    }
+    Logger.log('【' + samples[i].replace(/\n/g, ' / ') + '】\n' + out.join('\n'));
+  }
 }
 
 // ===================== メイン処理 =====================
 function onFormSubmit(e) {
   try {
-    var answers = collectAnswers_(e);
-    var data = extractData_(answers, e);
+    var data = extractData_(collectAnswers_(e), e);
 
-    var event = null;
-    var eventError = '';
-    if (data.startTime) {
-      try {
-        event = createCalendarEvent_(data);
-      } catch (err) {
-        eventError = String(err);
-      }
+    var event = null, eventError = '';
+    try {
+      event = createCalendarEvent_(data);
+    } catch (err) {
+      eventError = String(err);
     }
 
-    if (data.email) {
-      sendAutoReply_(data);
-    }
+    if (data.email) sendAutoReply_(data);
     notifyOwner_(data, event, eventError);
 
   } catch (err) {
-    // 失敗しても申込自体は残るので、主催者に知らせるだけに留める
     if (CONFIG.OWNER_EMAIL) {
       MailApp.sendEmail(CONFIG.OWNER_EMAIL,
         '【要対応】申込フォームの自動処理でエラー',
         'エラー内容:\n' + err + '\n\n' + (err.stack || '') +
-        '\n\nフォームの回答を直接ご確認ください。');
+        '\n\n申込データ自体は残っています。フォームの回答を直接ご確認ください。');
     }
     throw err;
   }
@@ -144,63 +158,38 @@ function collectAnswers_(e) {
   if (!e || !e.response) return map;
   var responses = e.response.getItemResponses();
   for (var i = 0; i < responses.length; i++) {
-    var title = String(responses[i].getItem().getTitle()).trim();
     var value = responses[i].getResponse();
-    if (Object.prototype.toString.call(value) === '[object Array]') {
-      value = value.join(' / ');
-    }
-    map[title] = value == null ? '' : String(value).trim();
+    if (Object.prototype.toString.call(value) === '[object Array]') value = value.join(' / ');
+    map[String(responses[i].getItem().getTitle()).trim()] = value == null ? '' : String(value).trim();
   }
   return map;
 }
 
 function extractData_(answers, e) {
-  var d = {
-    answers: answers,
-    email: '',
-    name: '',
-    kana: '',
-    phone: '',
-    menu: '',
-    method: '',
-    note: '',
-    rawDate: '',
-    rawDate2: '',
-    rawDate3: '',
-    rawTime: '',
-    startTime: null,
-    endTime: null,
-    allDay: false
-  };
+  var d = { answers: answers, submittedAt: new Date() };
 
-  // メールアドレス（フォームの自動収集を最優先）
-  if (e && e.response && typeof e.response.getRespondentEmail === 'function') {
-    d.email = e.response.getRespondentEmail() || '';
-  }
+  d.email = (e && e.response && typeof e.response.getRespondentEmail === 'function')
+    ? (e.response.getRespondentEmail() || '') : '';
   if (!d.email) d.email = valueOf_(answers, FIELD_KEYWORDS.email);
   if (!d.email) d.email = findEmailAnywhere_(answers);
 
-  d.name     = valueOf_(answers, FIELD_KEYWORDS.name);
-  d.kana     = valueOf_(answers, FIELD_KEYWORDS.kana);
-  d.phone    = valueOf_(answers, FIELD_KEYWORDS.phone);
-  d.menu     = valueOf_(answers, FIELD_KEYWORDS.menu);
-  d.method   = valueOf_(answers, FIELD_KEYWORDS.method);
-  d.note     = valueOf_(answers, FIELD_KEYWORDS.note);
-  d.rawDate  = valueOf_(answers, FIELD_KEYWORDS.date1);
-  d.rawDate2 = valueOf_(answers, FIELD_KEYWORDS.date2);
-  d.rawDate3 = valueOf_(answers, FIELD_KEYWORDS.date3);
-  d.rawTime  = valueOf_(answers, FIELD_KEYWORDS.time);
+  d.name    = valueOf_(answers, FIELD_KEYWORDS.name) || 'お申し込みの方';
+  d.kana    = valueOf_(answers, FIELD_KEYWORDS.kana);
+  d.menu    = valueOf_(answers, FIELD_KEYWORDS.menu);
+  d.method  = valueOf_(answers, FIELD_KEYWORDS.method);
+  d.note    = valueOf_(answers, FIELD_KEYWORDS.note);
+  d.phone   = valueOf_(answers, FIELD_KEYWORDS.phone);
+  d.rawDates = valueOf_(answers, FIELD_KEYWORDS.dates);
 
-  if (!d.name) d.name = 'お申し込みの方';
+  d.candidates = extractCandidates_(d.rawDates);
 
-  // 希望日時のパース（第1希望 → 見つからなければ日付らしい回答を総当たり）
-  var parsed = parseDateTime_(d.rawDate, d.rawTime);
-  if (!parsed) parsed = parseFromAnyAnswer_(answers, d.rawTime);
-
-  if (parsed) {
-    d.startTime = parsed.date;
-    d.allDay = !parsed.hasTime;
-    d.endTime = new Date(parsed.date.getTime() + CONFIG.SESSION_MINUTES * 60 * 1000);
+  // 最も確度の高い候補を「仮予定」に使う（exact > approx > dateonly）
+  d.best = null;
+  var rank = { exact: 3, approx: 2, dateonly: 1 };
+  for (var i = 0; i < d.candidates.length; i++) {
+    var c = d.candidates[i];
+    if (!c.date) continue;
+    if (!d.best || rank[c.precision] > rank[d.best.precision]) d.best = c;
   }
   return d;
 }
@@ -229,30 +218,42 @@ function findEmailAnywhere_(answers) {
   return '';
 }
 
-function parseFromAnyAnswer_(answers, rawTime) {
-  // 日付らしい設問を優先し、電話番号などの誤検出を避ける
-  var likely = [], others = [];
-  for (var title in answers) {
-    if (/日|希望|date|予約|スケジュール/i.test(title)) likely.push(title);
-    else others.push(title);
+// ===================== 希望日時の読み取り =====================
+/**
+ * 自由記述の希望日時欄を候補ごとに分解して解釈する。
+ * 「9月10日 午後、9月12日 午前中、平日午前中」→ 3候補として扱う。
+ */
+function extractCandidates_(text) {
+  if (!text) return [];
+  var normalized = toHalfWidth_(text)
+    .replace(/第\s*[1-3１-３一二三]\s*希望[：:]?/g, '\n')
+    .replace(/[、,;；・]/g, '\n');
+
+  var chunks = normalized.split(/\r?\n/);
+  var out = [];
+  for (var i = 0; i < chunks.length; i++) {
+    var raw = chunks[i].trim();
+    if (!raw) continue;
+    var parsed = parseDateTime_(raw);
+    out.push({
+      raw: raw,
+      date: parsed ? parsed.date : null,
+      precision: parsed ? parsed.precision : 'none'
+    });
+    if (out.length >= 5) break;
   }
-  var order = likely.concat(others);
-  for (var i = 0; i < order.length; i++) {
-    if (/電話|tel|phone|番号/i.test(order[i])) continue;
-    var parsed = parseDateTime_(answers[order[i]], rawTime);
-    if (parsed) return parsed;
-  }
-  return null;
+  return out;
 }
 
-// ===================== 日時パース =====================
 /**
- * "2026-09-10" / "2026/09/10 14:00" / "9月10日 14時30分" / "9/10 14:00" などに対応。
- * 年がない場合は今年、すでに過ぎている月日なら翌年とみなす。
+ * "2026-09-10" / "2026/09/10 14:00" / "9月10日 14時30分" / "9/10 午後" などに対応。
+ * 年がない場合は今年。すでに過ぎた月日なら翌年とみなす。
+ * 戻り値の precision: exact(時刻あり) / approx(時間帯のみ) / dateonly(日付のみ)
  */
-function parseDateTime_(dateText, timeText) {
+function parseDateTime_(dateText) {
   var s = toHalfWidth_(dateText);
   if (!s) return null;
+  if (/電話|tel/i.test(s)) return null;
 
   var now = new Date();
   var y, m, d;
@@ -265,30 +266,36 @@ function parseDateTime_(dateText, timeText) {
     if (!md) return null;
     m = parseInt(md[1], 10); d = parseInt(md[2], 10);
     y = now.getFullYear();
-    var candidate = new Date(y, m - 1, d);
-    if (candidate.getTime() < now.getTime() - 24 * 60 * 60 * 1000) y += 1;
+    if (new Date(y, m - 1, d).getTime() < now.getTime() - 24 * 60 * 60 * 1000) y += 1;
   }
   if (m < 1 || m > 12 || d < 1 || d > 31) return null;
 
-  // 時刻は「時刻用の設問」→「日付欄に含まれる時刻」の順で探す
-  var hasTime = false, hh = CONFIG.FALLBACK_HOUR, mi = CONFIG.FALLBACK_MINUTE;
-  var timeSource = toHalfWidth_(timeText) || stripDatePart_(s, full ? full[0] : null);
-  var tm = timeSource.match(/(\d{1,2})\s*[:時]\s*(\d{1,2})?/);
+  var rest = stripDatePart_(s, full ? full[0] : null);
+  var hh = CONFIG.FALLBACK_HOUR, mi = CONFIG.FALLBACK_MINUTE, precision = 'dateonly';
+
+  var tm = rest.match(/(\d{1,2})\s*[:時]\s*(\d{1,2})?/);
   if (tm) {
     var h = parseInt(tm[1], 10);
     var mnt = tm[2] ? parseInt(tm[2], 10) : 0;
     if (h >= 0 && h <= 23 && mnt >= 0 && mnt <= 59) {
-      hh = h; mi = mnt; hasTime = true;
-      if (/午後|pm/i.test(timeSource) && hh < 12) hh += 12;
+      hh = h; mi = mnt; precision = 'exact';
+      if (/午後|pm/i.test(rest) && hh < 12) hh += 12;
+    }
+  }
+  if (precision === 'dateonly') {
+    for (var word in CONFIG.SLOT_HOURS) {
+      if (rest.indexOf(word) !== -1) {
+        hh = CONFIG.SLOT_HOURS[word]; mi = 0; precision = 'approx';
+        break;
+      }
     }
   }
 
   var result = new Date(y, m - 1, d, hh, mi, 0);
   if (isNaN(result.getTime())) return null;
-  return { date: result, hasTime: hasTime };
+  return { date: result, precision: precision };
 }
 
-/** 日付部分を取り除いた残りの文字列（時刻の誤検出を防ぐ） */
 function stripDatePart_(s, matchedDate) {
   if (matchedDate) return s.replace(matchedDate, ' ');
   return s.replace(/\d{1,2}\s*[\/月.]\s*\d{1,2}\s*日?/, ' ');
@@ -306,73 +313,94 @@ function createCalendarEvent_(d) {
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   if (!cal) throw new Error('カレンダーが見つかりません: ' + CONFIG.CALENDAR_ID);
 
-  var title = CONFIG.EVENT_PREFIX + (d.allDay ? '【時刻要確認】' : '') + d.name + ' 様';
-  if (d.menu) title += '（' + d.menu + '）';
-
+  var who = d.name + ' 様';
+  var menu = d.menu ? '（' + d.menu + '）' : '';
   var description = buildDetailText_(d);
   var options = { description: description };
-  if (CONFIG.INVITE_APPLICANT && d.email) {
-    options.guests = d.email;
-    options.sendInvites = true;
-  }
   if (d.method) options.location = d.method;
+  if (CONFIG.INVITE_APPLICANT && d.email) { options.guests = d.email; options.sendInvites = true; }
 
-  var event = d.allDay
-    ? cal.createAllDayEvent(title, d.startTime, options)
-    : cal.createEvent(title, d.startTime, d.endTime, options);
+  var event, reminders = CONFIG.REMINDER_MINUTES;
 
-  if (CONFIG.REMINDER_MINUTES && CONFIG.REMINDER_MINUTES.length) {
+  if (d.best && d.best.precision === 'dateonly') {
+    event = cal.createAllDayEvent('【仮・時刻未定】' + who + menu, d.best.date, options);
+
+  } else if (d.best) {
+    var end = new Date(d.best.date.getTime() + CONFIG.SESSION_MINUTES * 60 * 1000);
+    var prefix = d.best.precision === 'exact' ? '【仮】' : '【仮・時間帯のみ】';
+    event = cal.createEvent(prefix + who + menu, d.best.date, end, options);
+
+  } else {
+    // 日時が読み取れないケース。取りこぼさないよう申込日に「やること」を置く
+    event = cal.createAllDayEvent('【要日程調整】' + who + menu, d.submittedAt, options);
+    reminders = CONFIG.TODO_REMINDER_MINUTES;
+  }
+
+  if (reminders && reminders.length) {
     event.removeAllReminders();
-    for (var i = 0; i < CONFIG.REMINDER_MINUTES.length; i++) {
-      event.addPopupReminder(CONFIG.REMINDER_MINUTES[i]);
-    }
+    for (var i = 0; i < reminders.length; i++) event.addPopupReminder(reminders[i]);
   }
   return event;
 }
 
 function buildDetailText_(d) {
-  var lines = [];
-  for (var title in d.answers) {
-    lines.push(title + '： ' + d.answers[title]);
+  var lines = ['■ 読み取った希望日時'];
+  if (d.candidates.length) {
+    for (var i = 0; i < d.candidates.length; i++) {
+      var c = d.candidates[i];
+      lines.push('　' + (i + 1) + '. ' + c.raw +
+        (c.date ? '　→ ' + formatWhen_(c.date, c.precision) : '　→ 読み取り不可'));
+    }
+  } else {
+    lines.push('　（記載なし）');
   }
+  lines.push('', '※ この予定は仮です。日程確定後に修正してください。', '', '■ 回答内容');
+  for (var title in d.answers) lines.push('　' + title + '： ' + d.answers[title]);
   return lines.join('\n');
 }
 
 // ===================== メール =====================
 function sendAutoReply_(d) {
-  var when = d.startTime
-    ? formatWhen_(d.startTime, d.allDay)
-    : (d.rawDate || '（ご希望日時の記載を確認しております）');
+  var subject = '【RAS®︎×東北】お申し込みを受け付けました（自動返信）';
 
-  var subject = '【RAS®】お申し込みありがとうございます（自動返信）';
+  var wishes = '';
+  if (d.candidates.length) {
+    for (var i = 0; i < d.candidates.length; i++) {
+      wishes += '　　第' + (i + 1) + '希望： ' + d.candidates[i].raw + '\n';
+    }
+  } else if (d.rawDates) {
+    wishes = '　　' + d.rawDates + '\n';
+  }
 
   var body =
     d.name + ' 様\n\n' +
-    'この度は RAS® のセッションにお申し込みいただき、ありがとうございます。\n' +
-    '以下の内容で承りました。\n\n' +
-    '──────────────────\n' +
-    '　ご希望日時： ' + when + '\n' +
-    (d.menu   ? '　メニュー　： ' + d.menu + '\n' : '') +
+    'この度は RAS®︎ 体験・無料相談にお申し込みいただき、ありがとうございます。\n' +
+    '以下の内容で受付を完了しました。\n\n' +
+    '──────────────────────────\n' +
+    (d.menu   ? '　ご希望　　： ' + d.menu + '\n' : '') +
     (d.method ? '　実施方法　： ' + d.method + '\n' : '') +
-    (d.rawDate2 ? '　第2希望　： ' + d.rawDate2 + '\n' : '') +
-    (d.rawDate3 ? '　第3希望　： ' + d.rawDate3 + '\n' : '') +
-    '──────────────────\n\n' +
+    (wishes   ? '　ご希望日時\n' + wishes : '') +
+    '──────────────────────────\n\n' +
     'このメールは自動でお送りしています。\n' +
-    'ご希望日時での確定可否は、あらためて私からご連絡いたします。\n' +
-    '2営業日を過ぎても連絡が届かない場合は、行き違いの可能性がありますので\n' +
+    '日程の確定は、48時間以内にあらためて私からご連絡いたします。\n' +
+    '48時間を過ぎても届かない場合は、迷惑メールフォルダをご確認のうえ、\n' +
     'お手数ですがこのメールにご返信ください。\n\n' +
-    '　ご案内までに、ひとつだけ。\n\n' +
-    '　セッションでお聞きするのは「あなたは、本当はどうしたいですか」だけです。\n' +
+    'キャンセルの場合は、前日までにご連絡をお願いいたします。\n\n' +
+    '　──　当日までに、ひとつだけ　──\n\n' +
+    '　RAS®︎でお聞きするのは「あなたは、本当はどうしたいですか」だけです。\n' +
     '　答えを用意しておく必要はありません。\n' +
     '　うまく言葉にできないまま来てくださって大丈夫です。\n\n' +
-    '当日お会いできることを楽しみにしております。\n\n' +
-    '---------------------------------\n' +
-    CONFIG.SENDER_NAME + '\n' +
-    '---------------------------------\n';
+    'お会いできることを楽しみにしております。\n\n' +
+    '────────────────────\n' +
+    'RAS®︎×東北\n' +
+    'RAS®︎認定ファシリテーター AKEMI\n' +
+    '電話　090-4636-0195\n' +
+    'メール　xakemix789@gmail.com\n' +
+    '対面セッション：宮城県大郷町\n' +
+    '────────────────────\n';
 
   var options = { name: CONFIG.SENDER_NAME };
   if (CONFIG.REPLY_TO) options.replyTo = CONFIG.REPLY_TO;
-
   GmailApp.sendEmail(d.email, subject, body, options);
 }
 
@@ -380,28 +408,24 @@ function notifyOwner_(d, event, eventError) {
   if (!CONFIG.OWNER_EMAIL) return;
 
   var status;
-  if (event && !d.allDay)      status = '○ カレンダー登録済み';
-  else if (event && d.allDay)  status = '△ 日付のみ登録（時刻が読み取れませんでした）';
-  else if (eventError)         status = '× カレンダー登録に失敗： ' + eventError;
-  else                         status = '× 希望日時を読み取れませんでした（手動で登録してください）';
+  if (eventError)                            status = '× カレンダー登録に失敗： ' + eventError;
+  else if (!d.best)                          status = '△ 希望日時を読み取れず、申込日に【要日程調整】を作成';
+  else if (d.best.precision === 'exact')     status = '○ 仮予定を登録： ' + formatWhen_(d.best.date, 'exact');
+  else if (d.best.precision === 'approx')    status = '○ 仮予定を登録（時間帯のみ）： ' + formatWhen_(d.best.date, 'approx');
+  else                                       status = '△ 日付のみ登録： ' + formatWhen_(d.best.date, 'dateonly');
 
-  var subject = '【申込】' + d.name + ' 様 / ' +
-    (d.startTime ? formatWhen_(d.startTime, d.allDay) : '日時未取得');
-
-  var body =
-    status + '\n' +
+  var subject = '【申込】' + d.name + ' 様' + (d.menu ? ' / ' + d.menu : '');
+  var body = status + '\n' +
     '自動返信： ' + (d.email ? '送信済み → ' + d.email : '× 宛先不明のため未送信') + '\n\n' +
-    '── 回答内容 ──\n' +
-    buildDetailText_(d) + '\n' +
-    (event ? '\nカレンダー: ' + event.getTitle() + '\n' : '');
+    buildDetailText_(d) + '\n';
 
   MailApp.sendEmail(CONFIG.OWNER_EMAIL, subject, body);
 }
 
-function formatWhen_(date, allDay) {
+function formatWhen_(date, precision) {
   var wd = ['日', '月', '火', '水', '木', '金', '土'];
-  var base = Utilities.formatDate(date, CONFIG.TIMEZONE, 'yyyy年M月d日') +
-             '(' + wd[date.getDay()] + ')';
-  if (allDay) return base + ' ※時刻未定';
-  return base + ' ' + Utilities.formatDate(date, CONFIG.TIMEZONE, 'HH:mm') + '〜';
+  var base = Utilities.formatDate(date, CONFIG.TIMEZONE, 'yyyy年M月d日') + '(' + wd[date.getDay()] + ')';
+  if (precision === 'dateonly') return base + ' ※時刻未定';
+  var hm = Utilities.formatDate(date, CONFIG.TIMEZONE, 'HH:mm');
+  return base + ' ' + hm + (precision === 'approx' ? '頃〜（時間帯のみ）' : '〜');
 }
