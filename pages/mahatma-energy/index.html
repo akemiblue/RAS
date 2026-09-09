@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マハトマエネルギー ― 偉大な魂とつながる</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+  :root{
+    --ink:#0b0a16;
+    --ink2:#141227;
+    --violet:#2c2350;
+    --gold:#e9d9a8;
+    --gold-bright:#f6ecc8;
+    --gold-dim:#9a875a;
+    --earth:#3a5a45;
+    --mist:rgba(233,217,168,0.08);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--gold);
+    font-family:'Noto Sans JP', sans-serif;
+    font-weight:300;
+    line-height:1.9;
+    overflow-x:hidden;
+  }
+  .serif{font-family:'Shippori Mincho', serif;}
+
+  /* background texture */
+  .bg-glow{
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(246,236,200,0.10), transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(58,90,69,0.18), transparent 70%),
+      linear-gradient(180deg, #08070f 0%, #0b0a16 40%, #0e0c1c 100%);
+  }
+
+  /* HERO */
+  .hero{
+    min-height:92vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:8vh 6vw 6vh;
+    position:relative;
+  }
+  .hero .eyebrow{
+    font-size:0.72rem; letter-spacing:0.45em; color:var(--gold-dim);
+    text-transform:uppercase; margin-bottom:2.2rem;
+  }
+  .hero h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:500;
+    font-size:clamp(2.4rem, 7vw, 4.6rem);
+    color:var(--gold-bright);
+    letter-spacing:0.05em;
+    line-height:1.35;
+    text-shadow:0 0 40px rgba(246,236,200,0.25);
+  }
+  .hero h1 small{
+    display:block; font-size:0.42em; color:var(--gold-dim); font-weight:400; margin-top:1rem; letter-spacing:0.15em;
+  }
+  .hero p.lede{
+    max-width:36em; margin:2.4rem auto 0; font-size:1.02rem; color:#cbbfa0; font-weight:300;
+  }
+  .ray{
+    width:1px; height:12vh; margin:3rem auto 0;
+    background:linear-gradient(180deg, rgba(246,236,200,0.9), transparent);
+    animation:pulse 3.5s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.35} 50%{opacity:1} }
+
+  section{ padding:7vh 6vw; max-width:920px; margin:0 auto; position:relative; }
+
+  .divider{
+    display:flex; align-items:center; gap:1rem; color:var(--gold-dim);
+    font-size:0.72rem; letter-spacing:0.35em; text-transform:uppercase; margin-bottom:2.2rem;
+  }
+  .divider::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--gold-dim), transparent); }
+
+  h2.section-title{
+    font-family:'Shippori Mincho', serif; font-weight:500;
+    font-size:clamp(1.5rem, 3.4vw, 2.1rem);
+    color:var(--gold-bright); margin-bottom:1.4rem; letter-spacing:0.03em;
+  }
+  p{ color:#cfc3a4; font-size:0.98rem; font-weight:300; }
+  p + p{ margin-top:1rem; }
+
+  /* WHAT IS */
+  .essence-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:1px;
+    background:rgba(233,217,168,0.15); margin-top:2.4rem; border:1px solid rgba(233,217,168,0.15);
+  }
+  .essence-card{ background:var(--ink2); padding:1.8rem 1.6rem; }
+  .essence-card .k{ font-size:0.68rem; letter-spacing:0.2em; color:var(--gold-dim); text-transform:uppercase; }
+  .essence-card .v{ font-family:'Shippori Mincho', serif; font-size:1.15rem; color:var(--gold-bright); margin-top:0.5rem; }
+  .essence-card .d{ font-size:0.86rem; color:#a89a78; margin-top:0.5rem; line-height:1.7; }
+  @media(max-width:640px){ .essence-grid{ grid-template-columns:1fr; } }
+
+  /* CHAKRA COLUMN - the signature element */
+  .column-wrap{
+    position:relative; margin-top:3rem; padding-left:3.5rem;
+  }
+  .spine-line{
+    position:absolute; left:1.15rem; top:0.4rem; bottom:0.4rem; width:2px;
+    background:linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 55%, var(--earth) 100%);
+    box-shadow:0 0 12px rgba(246,236,200,0.5);
+  }
+  .node{
+    position:relative; padding:1.6rem 0 1.6rem 1.6rem; border-left:none;
+  }
+  .node::before{
+    content:""; position:absolute; left:-2.6rem; top:1.9rem;
+    width:14px; height:14px; border-radius:50%;
+    background:radial-gradient(circle, var(--gold-bright), var(--gold) 70%);
+    box-shadow:0 0 14px 3px rgba(246,236,200,0.5);
+    transform:translateX(-2px);
+  }
+  .node:last-child::before{
+    background:radial-gradient(circle, #b7d6bd, var(--earth) 70%);
+    box-shadow:0 0 14px 3px rgba(58,90,69,0.6);
+  }
+  .node .locus{
+    font-size:0.68rem; letter-spacing:0.25em; color:var(--gold-dim); text-transform:uppercase;
+  }
+  .node h3{
+    font-family:'Shippori Mincho', serif; font-weight:500; font-size:1.25rem; color:var(--gold-bright);
+    margin-top:0.35rem;
+  }
+  .node .organ{ font-size:0.85rem; color:#a89a78; margin-top:0.2rem; font-style:italic; }
+  .node .desc{ font-size:0.9rem; color:#cfc3a4; margin-top:0.6rem; }
+
+  /* PROPERTIES */
+  .props{ margin-top:2.2rem; display:flex; flex-direction:column; gap:0; }
+  .prop-row{
+    display:grid; grid-template-columns:9rem 1fr; gap:1.4rem;
+    padding:1.1rem 0; border-top:1px solid rgba(233,217,168,0.12);
+  }
+  .prop-row:last-child{ border-bottom:1px solid rgba(233,217,168,0.12); }
+  .prop-row .label{ font-size:0.78rem; letter-spacing:0.1em; color:var(--gold-dim); }
+  .prop-row .body{ font-size:0.94rem; color:#cfc3a4; }
+  @media(max-width:640px){ .prop-row{ grid-template-columns:1fr; gap:0.3rem; } }
+
+  /* EXERCISE STEPS */
+  .steps{ margin-top:2rem; counter-reset:step; }
+  .step{
+    display:grid; grid-template-columns:2.6rem 1fr; gap:1.2rem;
+    padding:1.1rem 0; border-top:1px dashed rgba(233,217,168,0.18);
+  }
+  .step:last-child{ border-bottom:1px dashed rgba(233,217,168,0.18); }
+  .step .num{
+    counter-increment:step; font-family:'Shippori Mincho', serif; color:var(--gold-bright); font-size:1.1rem; opacity:0.7;
+  }
+  .step .num::before{ content: counter(step, decimal-leading-zero); }
+  .step .txt{ font-size:0.92rem; color:#cfc3a4; }
+
+  footer{
+    text-align:center; padding:6vh 6vw 8vh; color:var(--gold-dim); font-size:0.78rem; letter-spacing:0.08em;
+  }
+  footer .mark{ font-family:'Shippori Mincho', serif; font-size:1rem; color:var(--gold-bright); margin-bottom:0.8rem; }
+  footer .note{ max-width:30em; margin:1.4rem auto 0; font-size:0.74rem; color:#7d6f4f; line-height:1.9; letter-spacing:0.04em; }
+
+  @media (prefers-reduced-motion: reduce){
+    .ray{ animation:none; opacity:.7; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<section class="hero">
+  <div class="eyebrow">Mahatma Energy — まありん 8月配信ボイスより</div>
+  <h1>偉大な魂とつながる<br>ゴールデンホワイトの光<small>MAHATMA — THE GREAT SOUL WITHIN</small></h1>
+  <p class="lede">マハトマとはガンジーの信奉者に知られる「偉大な魂」の意。宇宙の12の光線と、数多くの天の存在たちの貢献によって創られた、人類が今アクセスできる集合意識のエネルギーです。</p>
+  <div class="ray"></div>
+</section>
+
+<section>
+  <div class="divider">このエネルギーの本質</div>
+  <h2 class="section-title">神と私たちをつなぐ、ゴールデンホワイトの帯</h2>
+  <p>マハトマエネルギーは、地球上で得られる最も高い波動を持つエネルギーのひとつでありながら、誰であっても例外なくアクセスできます。瞑想の中でそれを「降臨祈願」すれば、その繊細で高い波動が肉体・感情体・メンタル体・霊体を通り抜け、オーラを経て地球へと流れていきます。</p>
+  <div class="essence-grid">
+    <div class="essence-card">
+      <div class="k">色 / 波動</div>
+      <div class="v">ゴールデンホワイト</div>
+      <div class="d">非常に繊細で高い波動を表す色。燃焼するほど強力でも、扱う人を害することはない。</div>
+    </div>
+    <div class="essence-card">
+      <div class="k">起源</div>
+      <div class="v">12の光線 + 天の存在たち</div>
+      <div class="d">アトランティス期に地球と接触していたエネルギーが、準備の整った今、再び使えるようになったとされる。</div>
+    </div>
+    <div class="essence-card">
+      <div class="k">頻度</div>
+      <div class="v">1日最大3回まで</div>
+      <div class="d">降臨祈願できる回数の目安。ライトボディをこれまで以上のスピードと力で構築するのを助ける。</div>
+    </div>
+    <div class="essence-card">
+      <div class="k">向けられる先</div>
+      <div class="v">自分の課題 / 他者のヒーリング</div>
+      <div class="d">個人的な問題の解決にも、心の中で他者の癒しに向けることにも使える。</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="divider">エネルギーが流れる道すじ</div>
+  <h2 class="section-title">クラウンから大地へ ― 7つのセンターを流れるゴールデンホワイト</h2>
+  <p>瞑想では、宇宙から降りてきたゴールデンホワイトの光線がクラウンチャクラから入り、各センターとそれに対応する内分泌腺を癒しながら、最後は足を通って大地へと流れ込みます。</p>
+
+  <div class="column-wrap">
+    <div class="spine-line"></div>
+
+    <div class="node">
+      <div class="locus">Crown ― 松果体</div>
+      <h3>クラウンチャクラ</h3>
+      <div class="organ">松果体（しょうかたい）</div>
+      <div class="desc">宇宙からの光線をまず受け止める入口。小さな光の球のように活性化していく様子をイメージする。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Third Eye ― 下垂体</div>
+      <h3>第三の目</h3>
+      <div class="organ">下垂体（かすいたい）</div>
+      <div class="desc">若返りのホルモンだけを分泌し、老化ホルモンを止めるよう願う中心。若々しく、柔軟でオープンマインドな心身を保つ鍵とされる。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Throat</div>
+      <h3>喉のセンター</h3>
+      <div class="organ">甲状腺</div>
+      <div class="desc">マハトマエネルギーに眺められ、癒されていく感覚を持つ。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Heart</div>
+      <h3>胸のセンター</h3>
+      <div class="organ">胸腺</div>
+      <div class="desc">同じプロセスをここでも繰り返す。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Solar Plexus</div>
+      <h3>太陽神経叢</h3>
+      <div class="organ">膵臓</div>
+      <div class="desc">同じプロセスをここでも繰り返す。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Sacral</div>
+      <h3>仙骨のセンター</h3>
+      <div class="organ">卵巣と子宮</div>
+      <div class="desc">同じプロセスをここでも繰り返す。</div>
+    </div>
+
+    <div class="node">
+      <div class="locus">Base → Earth</div>
+      <h3>ベースセンター、そして大地へ</h3>
+      <div class="organ">副腎</div>
+      <div class="desc">最後に副腎で同じプロセスを行い、足を通してゴールデンホワイトの光を地球へと流し込み、地球そのものを霊的エネルギーで満たす。</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="divider">なぜ下垂体が鍵なのか</div>
+  <h2 class="section-title">「老化の信念」を手放し、若さのホルモンに委ねる</h2>
+  <p>下垂体は本来、私たちを若々しく保つホルモンを分泌する器官です。しかし人が集合意識の中にある「老化するのが当たり前」という信念を受け入れてしまうと、下垂体は老化を進めるホルモンを出してしまうとされています。だからこそ瞑想の中では、下垂体に向けて「若さと生命のホルモンを出し、老化のホルモンを止めてほしい」と、はっきりと言葉で頼むことが大切にされています。</p>
+  <div class="props">
+    <div class="prop-row">
+      <div class="label">整える対象</div>
+      <div class="body">下垂体のバランスと再活性化 ― マハトマエネルギーを使う最も効果的な方法のひとつとされる</div>
+    </div>
+    <div class="prop-row">
+      <div class="label">得られる状態</div>
+      <div class="body">若々しさ、性的な活性化、健康な免疫システム、代謝のバランス</div>
+    </div>
+    <div class="prop-row">
+      <div class="label">避けたいこと</div>
+      <div class="body">老化を当然とする集合意識の信念を、そのまま受け入れてしまうこと</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="divider">降臨祈願のエクササイズ</div>
+  <h2 class="section-title">実践の流れ</h2>
+  <div class="steps">
+    <div class="step"><div class="num"></div><div class="txt">リラックスし、深い呼吸をする。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">「マハトマエネルギーが私の体とオーラを通って地球へ流れ、私の生命を神への奉仕に使えるように」と心の中で呼びかける。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">ゴールデンホワイトの光線が宇宙からクラウンチャクラへ降りてくるのを感じる、または想像する。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">松果体・下垂体・甲状腺・胸腺・膵臓・卵巣と子宮・副腎の順に、光線を通してリラックスとバランス、癒しを願う。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">ゴールデンホワイトの光を足から大地へ流し、地球を霊的エネルギーで満たす。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">必要としている誰かに、このエネルギーを送る。</div></div>
+    <div class="step"><div class="num"></div><div class="txt">宇宙の根源と、見守ってくれる見えない存在に感謝して終える。</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="mark">Release &amp; Awakening System</div>
+  <div>マハトマエネルギー ― 偉大な魂とつながる</div>
+  <p class="note">まありん 8月配信ボイスの内容をもとに構成した、個人の瞑想実践のためのページです。医療行為ではなく、治療や診断に代わるものではありません。体調に不安がある場合は、必ず医療機関にご相談ください。</p>
+</footer>
+
+</body>
+</html>
