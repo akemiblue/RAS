@@ -2,7 +2,7 @@
 """
 プロフィールグリッド12マス（文字タイル × 写真タイルの市松）を書き出すスクリプト。
 
-    python3 make_grid.py            # 全パレット（sage / ras）
+    python3 make_grid.py            # 全パレット（sage / meishi / ras）
     python3 make_grid.py ras        # パレットを指定
 
 各パレットについて次を出力する:
@@ -61,13 +61,22 @@ PALETTES = {
         wash_amount=0.14,
         label='A案 sage（参考画像の配色）',
     ),
-    # B案: RASロゴの臙脂・朱・橙に寄せた配色
+    # B案: 名刺の実配色。背景グラデ #ebdede→#caaa99、見出し #8b5031、本文 #444342 から起こした。
+    #      3トーンは名刺のグラデーション上を淡い側から拾っている。
+    'meishi': dict(
+        tones=['#F3EAE6', '#EBDEDE', '#DAC4BC'],
+        inks=['#8B5031', '#444342', '#5F4033'],   # 3つ目は見出し色を濃いトーン用に沈めたもの
+        wash='#DAC4BC',      # 名刺グラデの中間色。写真も名刺と同じ空気になる
+        wash_amount=0.16,
+        label='B案 meishi（名刺の実配色）',
+    ),
+    # C案: RASロゴの臙脂・朱・橙に寄せた配色
     'ras': dict(
         tones=['#F4EDEA', '#EBD9D3', '#F3E3CE'],
         inks=['#8C4A55', '#A03A3F', '#98652F'],
         wash='#E5CFC6',
         wash_amount=0.16,
-        label='B案 ras（ロゴ配色）',
+        label='C案 ras（ロゴ配色）',
     ),
 }
 
