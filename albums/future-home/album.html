@@ -1,0 +1,865 @@
+<title>10年後の私の家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:wght@300;400&display=swap">
+<style>
+:root{
+  --paper:#E9EAE5;
+  --surface:#F6F6F2;
+  --surface-2:#FDFDFB;
+  --ink:#1C2126;
+  --muted:#6C736D;
+  --accent:#2E5266;
+  --moss:#677A59;
+  --line:rgba(28,33,38,.16);
+  --line-soft:rgba(28,33,38,.09);
+  --shadow:0 1px 2px rgba(28,33,38,.10), 0 8px 20px rgba(28,33,38,.05);
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gothic:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --roman:"Cormorant Garamond",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15181A;
+    --surface:#1E2225;
+    --surface-2:#262B2E;
+    --ink:#E8E6DF;
+    --muted:#9AA19B;
+    --accent:#8FB4C6;
+    --moss:#A3B892;
+    --line:rgba(232,230,223,.18);
+    --line-soft:rgba(232,230,223,.10);
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15181A;
+  --surface:#1E2225;
+  --surface-2:#262B2E;
+  --ink:#E8E6DF;
+  --muted:#9AA19B;
+  --accent:#8FB4C6;
+  --moss:#A3B892;
+  --line:rgba(232,230,223,.18);
+  --line-soft:rgba(232,230,223,.10);
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--gothic);
+  font-size:15px;
+  line-height:1.8;
+  margin:0;
+  padding-inline:clamp(16px,4vw,44px);
+  padding-block:clamp(28px,5vw,56px) 72px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1060px;margin:0 auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:1px}
+
+/* ---- 表紙 ---- */
+.cover{
+  display:grid;
+  gap:22px;
+  padding-bottom:clamp(28px,5vw,44px);
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-family:var(--roman);
+  font-size:.95rem;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0;
+}
+h1{
+  font-family:var(--mincho);
+  font-weight:600;
+  font-size:clamp(2.1rem,6.4vw,3.3rem);
+  line-height:1.28;
+  letter-spacing:.06em;
+  margin:0;
+  text-wrap:balance;
+}
+.lede{
+  font-family:var(--mincho);
+  max-width:36em;
+  font-size:1rem;
+  line-height:2.05;
+  color:var(--ink);
+  margin:0;
+}
+.cover-foot{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px 20px;
+}
+.count{
+  font-family:var(--roman);
+  font-size:1.6rem;
+  letter-spacing:.06em;
+  color:var(--accent);
+  font-variant-numeric:tabular-nums;
+}
+.count span{font-family:var(--gothic);font-size:.82rem;letter-spacing:.14em;color:var(--muted);margin-left:.45em}
+.spacer{flex:1 1 auto}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+.btn{
+  border:1px solid var(--ink);
+  background:transparent;
+  color:var(--ink);
+  padding:9px 20px;
+  border-radius:1px;
+  font-size:.88rem;
+  letter-spacing:.1em;
+  transition:background .18s ease,color .18s ease;
+}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.btn.ghost:hover{background:transparent;border-color:var(--ink);color:var(--ink)}
+.btn.quiet{border:none;color:var(--muted);padding:9px 6px;text-decoration:underline;text-underline-offset:4px}
+.btn.quiet:hover{background:transparent;color:var(--ink)}
+.btn.danger{border-color:var(--line);color:var(--muted)}
+.btn.danger:hover{background:#8C3B34;border-color:#8C3B34;color:#F6F6F2}
+.notice{
+  font-size:.85rem;
+  color:var(--muted);
+  border-left:2px solid var(--line);
+  padding-left:12px;
+}
+
+/* ---- 章 ---- */
+.chapter{
+  padding-block:clamp(30px,4.4vw,46px);
+  border-bottom:1px solid var(--line-soft);
+}
+.chapter-head{
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.kan{
+  font-family:var(--mincho);
+  font-size:1.05rem;
+  color:var(--moss);
+  letter-spacing:.1em;
+  border:1px solid var(--line);
+  width:2.2em;
+  height:2.2em;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  align-self:center;
+}
+.chapter h2{
+  font-family:var(--mincho);
+  font-weight:600;
+  font-size:1.28rem;
+  letter-spacing:.08em;
+  margin:0;
+  text-wrap:balance;
+}
+.q{
+  font-size:.85rem;
+  color:var(--muted);
+  margin:0;
+  flex:1 1 16em;
+  min-width:0;
+}
+.chapter-add{margin-left:auto}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(clamp(148px,23vw,232px),1fr));
+  gap:clamp(12px,1.6vw,18px);
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.tile{
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  padding:8px 8px 0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  text-align:left;
+  width:100%;
+  border-radius:1px;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--line)}
+.tile .shot{
+  aspect-ratio:4/5;
+  width:100%;
+  object-fit:cover;
+  display:block;
+  background:var(--surface-2);
+  max-width:100%;
+}
+.tile figcaption{
+  font-family:var(--mincho);
+  font-size:.84rem;
+  line-height:1.75;
+  padding:10px 2px 12px;
+  color:var(--ink);
+  overflow-wrap:anywhere;
+}
+.tile figcaption:empty::before{content:"（言葉はまだ）";color:var(--muted)}
+.tile.words .shot{
+  aspect-ratio:4/5;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  font-family:var(--mincho);
+  font-size:1rem;
+  line-height:2;
+  text-align:center;
+  color:var(--ink);
+  background:var(--surface-2);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+}
+.tile.words figcaption{color:var(--muted);font-size:.78rem}
+.slot{
+  aspect-ratio:4/5;
+  border:1px dashed var(--line);
+  background:transparent;
+  color:var(--muted);
+  font-size:.82rem;
+  letter-spacing:.08em;
+  border-radius:1px;
+  display:grid;
+  place-items:center;
+  transition:border-color .18s ease,color .18s ease,background .18s ease;
+}
+.slot:hover,.chapter.drop .slot{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+.missing{
+  display:grid;
+  place-items:center;
+  aspect-ratio:4/5;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+/* ---- ダイアログ ---- */
+dialog{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink);
+  border-radius:2px;
+  padding:0;
+  width:min(560px,calc(100vw - 32px));
+  box-shadow:var(--shadow);
+}
+dialog.wide{width:min(760px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(20,23,26,.55)}
+.sheet{padding:clamp(20px,3vw,30px);display:grid;gap:16px}
+.sheet h3{
+  font-family:var(--mincho);
+  font-weight:600;
+  font-size:1.12rem;
+  letter-spacing:.1em;
+  margin:0;
+}
+label{display:grid;gap:6px;font-size:.8rem;letter-spacing:.1em;color:var(--muted)}
+textarea,select{
+  font-family:var(--gothic);
+  font-size:.95rem;
+  color:var(--ink);
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:1px;
+  padding:9px 11px;
+  width:100%;
+}
+textarea{min-height:78px;resize:vertical;line-height:1.8;font-family:var(--mincho)}
+.drop{
+  border:1px dashed var(--line);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:26px 16px;
+  text-align:center;
+  font-size:.85rem;
+  border-radius:1px;
+  width:100%;
+  display:grid;
+  gap:6px;
+  place-items:center;
+}
+.drop:hover,.drop.over{border-color:var(--accent);color:var(--accent)}
+.drop small{font-size:.74rem;letter-spacing:.06em}
+.preview{max-height:230px;width:auto;max-width:100%;object-fit:contain;justify-self:center;border:1px solid var(--line-soft)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row .spacer{flex:1 1 auto}
+.status{font-size:.8rem;color:var(--muted);min-height:1.4em}
+.status.err{color:#A2493F}
+:root[data-theme="dark"] .status.err{color:#E39C92}
+.viewer{display:grid;gap:18px;grid-template-columns:minmax(0,1.25fr) minmax(240px,1fr)}
+.viewer .full{width:100%;max-height:62vh;object-fit:contain;background:var(--surface-2);border:1px solid var(--line-soft)}
+.viewer .words-full{
+  font-family:var(--mincho);
+  font-size:1.15rem;
+  line-height:2.1;
+  padding:28px;
+  background:var(--surface-2);
+  border:1px solid var(--line-soft);
+  overflow-wrap:anywhere;
+}
+.viewer .side{display:grid;gap:14px;align-content:start}
+.filed{font-size:.78rem;letter-spacing:.1em;color:var(--moss)}
+@media (max-width:620px){.viewer{grid-template-columns:1fr}}
+
+footer{
+  margin-top:34px;
+  padding-top:20px;
+  border-top:1px solid var(--line-soft);
+  color:var(--muted);
+  font-size:.78rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+  align-items:center;
+}
+.meter{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="cover">
+    <p class="eyebrow">Album &middot; 2036</p>
+    <h1>10年後の私の家</h1>
+    <p class="lede">「こんな暮らしがいいな」と思った写真を、見つけるたびに一枚ずつ置いていく場所。<br>
+      うまく説明しなくていい。どこが好きだったのか、ひとことだけ添えておく。<br>
+      十年ぶんたまったころには、そこが自分の家の設計図になっている。</p>
+    <div class="cover-foot">
+      <p class="count" id="count">0<span>枚</span></p>
+      <div class="spacer"></div>
+      <button class="btn" id="add-open" type="button">写真を入れる</button>
+      <button class="btn ghost" id="add-words" type="button">言葉だけ入れる</button>
+    </div>
+    <p class="notice" id="notice" hidden></p>
+  </header>
+
+  <main id="chapters"></main>
+
+  <footer>
+    <span>写真はこのアルバムの中だけに保存されます。</span>
+    <span class="meter" id="meter" hidden></span>
+  </footer>
+</div>
+
+<dialog id="add-dialog">
+  <form method="dialog" class="sheet" id="add-form">
+    <h3 id="add-title">一枚、置く</h3>
+    <input type="file" id="file-input" accept="image/*" hidden>
+    <button type="button" class="drop" id="drop-zone">
+      ここに写真をドラッグ、またはクリックして選ぶ
+      <small>JPEG・PNG・WebP・GIF</small>
+    </button>
+    <img class="preview" id="preview" alt="選んだ写真" hidden>
+    <label for="add-note">ここが好き
+      <textarea id="add-note" placeholder="例）朝、この角度で光が入るのがいい"></textarea>
+    </label>
+    <label for="add-chapter">どの場面に置く？
+      <select id="add-chapter"></select>
+    </label>
+    <p class="status" id="add-status"></p>
+    <div class="row">
+      <button type="button" class="btn quiet" id="add-cancel">やめる</button>
+      <div class="spacer"></div>
+      <button type="button" class="btn" id="add-save">アルバムに入れる</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="view-dialog" class="wide">
+  <div class="sheet">
+    <div class="viewer">
+      <div id="view-media"></div>
+      <div class="side">
+        <p class="filed" id="view-filed"></p>
+        <label for="view-note">ここが好き
+          <textarea id="view-note"></textarea>
+        </label>
+        <label for="view-chapter">場面
+          <select id="view-chapter"></select>
+        </label>
+        <p class="status" id="view-status"></p>
+        <div class="row">
+          <button type="button" class="btn" id="view-save">書きかえを保存</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn danger" id="view-delete">外す</button>
+        </div>
+        <div class="row">
+          <button type="button" class="btn quiet" id="view-close">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  "use strict";
+
+  var CHAPTERS = [
+    {id:"asa",    kan:"一", title:"朝のはじまり",       q:"目がさめて、いちばんに見える光はどこから入ってくる？"},
+    {id:"iru",    kan:"二", title:"いちばん長くいる場所", q:"一日のうち何時間もそこにいたい、と思える一角。"},
+    {id:"soto",   kan:"三", title:"外とのあいだ",       q:"窓の外、庭、縁側。家の内と外が混ざるところ。"},
+    {id:"hito",   kan:"四", title:"誰かが来る日",       q:"人を招くとしたら、どこに座ってもらう？"},
+    {id:"hitori", kan:"五", title:"ひとりの時間",       q:"誰にも気をつかわずにいられる場所。"},
+    {id:"te",     kan:"六", title:"十年後の手ざわり",   q:"その家で使っているもの、着ているもの、手に持つもの。"},
+    {id:"mada",   kan:"他", title:"まだ名前のない一枚", q:"どこに置くか決まらないけれど、好きだと思った写真。"}
+  ];
+  var CH_BY_ID = {};
+  CHAPTERS.forEach(function(c){ CH_BY_ID[c.id] = c; });
+
+  var els = {
+    chapters: document.getElementById("chapters"),
+    count: document.getElementById("count"),
+    notice: document.getElementById("notice"),
+    meter: document.getElementById("meter"),
+    addOpen: document.getElementById("add-open"),
+    addWords: document.getElementById("add-words"),
+    addDialog: document.getElementById("add-dialog"),
+    addTitle: document.getElementById("add-title"),
+    addForm: document.getElementById("add-form"),
+    addNote: document.getElementById("add-note"),
+    addChapter: document.getElementById("add-chapter"),
+    addStatus: document.getElementById("add-status"),
+    addSave: document.getElementById("add-save"),
+    addCancel: document.getElementById("add-cancel"),
+    fileInput: document.getElementById("file-input"),
+    dropZone: document.getElementById("drop-zone"),
+    preview: document.getElementById("preview"),
+    viewDialog: document.getElementById("view-dialog"),
+    viewMedia: document.getElementById("view-media"),
+    viewFiled: document.getElementById("view-filed"),
+    viewNote: document.getElementById("view-note"),
+    viewChapter: document.getElementById("view-chapter"),
+    viewStatus: document.getElementById("view-status"),
+    viewSave: document.getElementById("view-save"),
+    viewDelete: document.getElementById("view-delete"),
+    viewClose: document.getElementById("view-close")
+  };
+
+  var db = null, assets = null;
+  var photos = [];
+  var canWrite = false, canPhoto = false;
+  var pending = {blob:null, type:null, url:null, wordsOnly:false};
+  var current = null;
+
+  /* ---------- 章の骨組みを先に描く ---------- */
+  CHAPTERS.forEach(function(c){
+    var sec = document.createElement("section");
+    sec.className = "chapter";
+    sec.dataset.chapter = c.id;
+
+    var head = document.createElement("div");
+    head.className = "chapter-head";
+    var kan = document.createElement("span");
+    kan.className = "kan"; kan.textContent = c.kan;
+    var h2 = document.createElement("h2"); h2.textContent = c.title;
+    var q = document.createElement("p"); q.className = "q"; q.textContent = c.q;
+    var add = document.createElement("button");
+    add.type = "button"; add.className = "btn ghost chapter-add"; add.textContent = "ここに入れる";
+    add.addEventListener("click", function(){ openAdd(c.id, !canPhoto); });
+    head.appendChild(kan); head.appendChild(h2); head.appendChild(q); head.appendChild(add);
+
+    var ul = document.createElement("ul");
+    ul.className = "grid";
+    ul.dataset.grid = c.id;
+
+    sec.appendChild(head); sec.appendChild(ul);
+    els.chapters.appendChild(sec);
+
+    sec.addEventListener("dragover", function(e){
+      if(!canWrite) return;
+      e.preventDefault(); sec.classList.add("drop");
+    });
+    sec.addEventListener("dragleave", function(){ sec.classList.remove("drop"); });
+    sec.addEventListener("drop", function(e){
+      if(!canWrite) return;
+      e.preventDefault(); sec.classList.remove("drop");
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if(f && canPhoto){ openAdd(c.id, false); acceptFile(f); }
+    });
+
+    CH_BY_ID[c.id].list = ul;
+    CH_BY_ID[c.id].addBtn = add;
+  });
+
+  CHAPTERS.forEach(function(c){
+    [els.addChapter, els.viewChapter].forEach(function(sel){
+      var o = document.createElement("option");
+      o.value = c.id; o.textContent = c.title;
+      sel.appendChild(o);
+    });
+  });
+
+  render();
+
+  /* ---------- 描画 ---------- */
+  function render(){
+    var total = 0;
+    CHAPTERS.forEach(function(c){
+      var mine = photos.filter(function(p){ return (p.chapter || "mada") === c.id; });
+      total += mine.length;
+      var ul = c.list;
+      ul.textContent = "";
+      mine.forEach(function(p){ ul.appendChild(tile(p)); });
+      if(canWrite){
+        var li = document.createElement("li");
+        var slot = document.createElement("button");
+        slot.type = "button"; slot.className = "slot";
+        slot.textContent = mine.length ? "＋ もう一枚" : "＋ ここに一枚";
+        slot.addEventListener("click", function(){ openAdd(c.id, !canPhoto); });
+        li.appendChild(slot);
+        ul.appendChild(li);
+      } else if(!mine.length){
+        var empty = document.createElement("li");
+        empty.className = "missing";
+        empty.textContent = "まだ空です";
+        ul.appendChild(empty);
+      }
+    });
+    els.count.textContent = total;
+    var unit = document.createElement("span");
+    unit.textContent = "枚";
+    els.count.appendChild(unit);
+  }
+
+  function tile(p){
+    var li = document.createElement("li");
+    var fig = document.createElement("figure");
+    fig.className = "tile" + (p.assetId ? "" : " words");
+    fig.tabIndex = 0;
+    fig.setAttribute("role","button");
+
+    if(p.assetId){
+      var img = document.createElement("img");
+      img.className = "shot";
+      img.loading = "lazy";
+      img.alt = p.note ? p.note : "アルバムの写真";
+      img.src = "/_blob/" + p.assetId;
+      img.addEventListener("error", function(){
+        var miss = document.createElement("div");
+        miss.className = "missing";
+        miss.textContent = "写真が見つかりません";
+        if(img.parentNode) img.parentNode.replaceChild(miss, img);
+      });
+      fig.appendChild(img);
+      var cap = document.createElement("figcaption");
+      cap.textContent = p.note || "";
+      fig.appendChild(cap);
+    } else {
+      var words = document.createElement("div");
+      words.className = "shot";
+      words.textContent = p.note || "（言葉はまだ）";
+      fig.appendChild(words);
+      var cap2 = document.createElement("figcaption");
+      cap2.textContent = "言葉だけの一枚";
+      fig.appendChild(cap2);
+    }
+
+    function open(){ openView(p); }
+    fig.addEventListener("click", open);
+    fig.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); }
+    });
+    li.appendChild(fig);
+    return li;
+  }
+
+  /* ---------- 追加 ---------- */
+  function openAdd(chapterId, wordsOnly){
+    clearPending();
+    pending.wordsOnly = !!wordsOnly;
+    els.addChapter.value = chapterId || "mada";
+    els.addNote.value = "";
+    els.addStatus.textContent = "";
+    els.addStatus.classList.remove("err");
+    els.addTitle.textContent = wordsOnly ? "言葉だけ、置く" : "一枚、置く";
+    els.dropZone.hidden = !!wordsOnly;
+    els.addNote.placeholder = wordsOnly
+      ? "例）帰ってきたとき、家じゅうがしんとしているのがいい"
+      : "例）朝、この角度で光が入るのがいい";
+    els.addSave.disabled = false;
+    els.addSave.textContent = "アルバムに入れる";
+    els.addDialog.showModal();
+    (wordsOnly ? els.addNote : els.dropZone).focus();
+  }
+
+  function clearPending(){
+    if(pending.url) URL.revokeObjectURL(pending.url);
+    pending = {blob:null, type:null, url:null, wordsOnly:false};
+    els.preview.hidden = true;
+    els.preview.removeAttribute("src");
+    els.fileInput.value = "";
+  }
+
+  els.addOpen.addEventListener("click", function(){ openAdd("mada", false); });
+  els.addWords.addEventListener("click", function(){ openAdd("mada", true); });
+  els.dropZone.addEventListener("click", function(){ els.fileInput.click(); });
+  els.fileInput.addEventListener("change", function(){
+    if(els.fileInput.files && els.fileInput.files[0]) acceptFile(els.fileInput.files[0]);
+  });
+  ["dragover","dragenter"].forEach(function(ev){
+    els.dropZone.addEventListener(ev, function(e){ e.preventDefault(); els.dropZone.classList.add("over"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    els.dropZone.addEventListener(ev, function(){ els.dropZone.classList.remove("over"); });
+  });
+  els.dropZone.addEventListener("drop", function(e){
+    e.preventDefault();
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) acceptFile(f);
+  });
+  els.addCancel.addEventListener("click", function(){ clearPending(); els.addDialog.close(); });
+  els.addDialog.addEventListener("close", clearPending);
+
+  function acceptFile(file){
+    if(!file) return;
+    if(pending.url) URL.revokeObjectURL(pending.url);
+    pending.blob = file;
+    pending.type = file.type;
+    pending.url = URL.createObjectURL(file);
+    els.preview.src = pending.url;
+    els.preview.hidden = false;
+    els.addStatus.classList.remove("err");
+    els.addStatus.textContent = file.name;
+  }
+
+  async function prepareImage(file){
+    var passthrough = ["image/jpeg","image/png","image/webp","image/gif"];
+    if(file.type === "image/gif") return {blob:file, type:"image/gif"};
+    var bitmap;
+    try { bitmap = await createImageBitmap(file); }
+    catch(e){
+      if(passthrough.indexOf(file.type) !== -1) return {blob:file, type:file.type};
+      throw new Error("unreadable");
+    }
+    var max = 1800;
+    var scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+    var w = Math.round(bitmap.width * scale), h = Math.round(bitmap.height * scale);
+    var canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+    if(bitmap.close) bitmap.close();
+    var blob = await new Promise(function(res){ canvas.toBlob(res, "image/webp", 0.86); });
+    if(!blob){
+      if(passthrough.indexOf(file.type) !== -1) return {blob:file, type:file.type};
+      throw new Error("unreadable");
+    }
+    return {blob:blob, type:"image/webp"};
+  }
+
+  els.addSave.addEventListener("click", async function(){
+    if(!db){ fail(els.addStatus, "いまは保存できません。ページを開きなおしてみてください。"); return; }
+    var note = els.addNote.value.trim();
+    if(!pending.blob && !note){
+      fail(els.addStatus, pending.wordsOnly ? "言葉を書いてください。" : "写真を選ぶか、言葉を書いてください。");
+      return;
+    }
+    els.addSave.disabled = true;
+    els.addSave.textContent = "入れています…";
+    els.addStatus.classList.remove("err");
+    els.addStatus.textContent = pending.blob ? "写真をしまっています…" : "書きとめています…";
+    try{
+      var assetId = null;
+      if(pending.blob){
+        if(!assets) throw {code:"not_granted"};
+        var prepared = await prepareImage(pending.blob);
+        var up = await assets.upload(prepared.blob, {type: prepared.type});
+        assetId = up.id;
+      }
+      await db.collection("photos").doc().set({
+        assetId: assetId,
+        note: note,
+        chapter: els.addChapter.value,
+        createdAt: Date.now()
+      });
+      clearPending();
+      els.addDialog.close();
+      refreshMeter();
+    }catch(err){
+      fail(els.addStatus, message(err));
+      els.addSave.disabled = false;
+      els.addSave.textContent = "アルバムに入れる";
+    }
+  });
+
+  /* ---------- 一枚を開く ---------- */
+  function openView(p){
+    current = p;
+    els.viewMedia.textContent = "";
+    if(p.assetId){
+      var img = document.createElement("img");
+      img.className = "full";
+      img.alt = p.note ? p.note : "アルバムの写真";
+      img.src = "/_blob/" + p.assetId;
+      els.viewMedia.appendChild(img);
+    } else {
+      var words = document.createElement("div");
+      words.className = "words-full";
+      words.textContent = p.note || "（言葉はまだ）";
+      els.viewMedia.appendChild(words);
+    }
+    var ch = CH_BY_ID[p.chapter] || CH_BY_ID.mada;
+    els.viewFiled.textContent = ch.kan + "　" + ch.title;
+    els.viewNote.value = p.note || "";
+    els.viewChapter.value = ch.id;
+    els.viewNote.disabled = !canWrite;
+    els.viewChapter.disabled = !canWrite;
+    els.viewSave.hidden = !canWrite;
+    els.viewDelete.hidden = !canWrite;
+    els.viewStatus.textContent = "";
+    els.viewStatus.classList.remove("err");
+    els.viewDialog.showModal();
+  }
+
+  els.viewClose.addEventListener("click", function(){ els.viewDialog.close(); });
+
+  els.viewSave.addEventListener("click", async function(){
+    if(!current || !db) return;
+    els.viewSave.disabled = true;
+    els.viewStatus.classList.remove("err");
+    els.viewStatus.textContent = "書きかえています…";
+    try{
+      await db.collection("photos").doc(current.id).update({
+        note: els.viewNote.value.trim(),
+        chapter: els.viewChapter.value
+      });
+      els.viewStatus.textContent = "保存しました。";
+    }catch(err){
+      fail(els.viewStatus, message(err));
+    }
+    els.viewSave.disabled = false;
+  });
+
+  els.viewDelete.addEventListener("click", async function(){
+    if(!current || !db) return;
+    if(!window.confirm("この一枚をアルバムから外します。もとに戻せません。")) return;
+    var target = current;
+    els.viewDelete.disabled = true;
+    els.viewStatus.classList.remove("err");
+    els.viewStatus.textContent = "外しています…";
+    try{
+      await db.collection("photos").doc(target.id).delete();
+      if(target.assetId && assets){
+        try { await assets.delete(target.assetId); } catch(e){ /* 写真の実体だけ残っても表示には影響しない */ }
+      }
+      els.viewDialog.close();
+      refreshMeter();
+    }catch(err){
+      fail(els.viewStatus, message(err));
+    }
+    els.viewDelete.disabled = false;
+  });
+
+  /* ---------- 状態まわり ---------- */
+  function fail(node, text){
+    node.textContent = text;
+    node.classList.add("err");
+  }
+
+  function message(err){
+    var code = err && err.code;
+    switch(code){
+      case "unreadable": return "この形式の写真は読めませんでした。JPEGかPNGで書き出してから入れてください。";
+      case "too_large": return "写真が大きすぎます。少し小さくしてから入れてください。";
+      case "unsupported_type": return "この形式には対応していません。JPEG・PNG・WebP・GIFで入れてください。";
+      case "quota_or_state": return "アルバムの容量がいっぱいです。いらない一枚を外すと入ります。";
+      case "quota_exceeded": return "アルバムに入る枚数の上限です。いらない一枚を外してください。";
+      case "rate_limited":
+      case "resource_exhausted": return "少し間をあけて、もう一度ためしてください。";
+      case "not_granted":
+      case "capability_disabled":
+      case "capability_removed": return "このビューでは写真を入れられません。ご自分のアルバムとして開きなおしてください。";
+      case "revoked": return "アクセスが変わりました。ページを開きなおしてください。";
+      case "unavailable":
+      case "store_unavailable": return "つながりませんでした。もう一度ためしてください。";
+      case "invalid_argument":
+      case "invalid_request": return "この内容は保存できませんでした。書きかえてためしてください。";
+      default:
+        if(err && err.message === "unreadable"){
+          return "この形式の写真は読めませんでした。JPEGかPNGで書き出してから入れてください。";
+        }
+        return "うまくいきませんでした。もう一度ためしてください。";
+    }
+  }
+
+  function showNotice(text){
+    els.notice.textContent = text;
+    els.notice.hidden = false;
+  }
+
+  function setReadOnly(){
+    canWrite = false; canPhoto = false;
+    els.addOpen.hidden = true;
+    els.addWords.hidden = true;
+    CHAPTERS.forEach(function(c){ c.addBtn.hidden = true; });
+    render();
+  }
+
+  async function refreshMeter(){
+    if(!assets) return;
+    try{
+      var res = await assets.list();
+      var u = res.usage;
+      if(!u || !u.maxBytes) return;
+      var pct = Math.round((u.bytes / u.maxBytes) * 1000) / 10;
+      els.meter.textContent = "アルバムの容量　" + (pct < 0.1 ? "0.1未満" : pct) + "％（" + u.files + "点）";
+      els.meter.hidden = false;
+    }catch(e){ /* 容量表示は補助情報なので黙って諦める */ }
+  }
+
+  /* ---------- 保存先につなぐ ---------- */
+  (async function connect(){
+    var store = null, store2 = null;
+    try { store = await window.claude.use("db"); } catch(e){ store = null; }
+    try { store2 = await window.claude.use("assets"); } catch(e){ store2 = null; }
+    db = store; assets = store2;
+
+    if(!db){
+      setReadOnly();
+      showNotice("いまは読むだけのビューです。写真を入れるときは、ご自分のアルバムとして開いてください。");
+      return;
+    }
+    canWrite = true;
+    canPhoto = !!assets;
+    if(!canPhoto){
+      els.addOpen.hidden = true;
+      showNotice("このビューでは写真を入れられません。言葉だけなら残せます。");
+    }
+
+    db.collection("photos").orderBy("createdAt", "asc").limit(500).onSnapshot(function(snap){
+      photos = snap.docs.map(function(d){
+        var data = d.data() || {};
+        return {
+          id: d.id,
+          assetId: data.assetId || null,
+          note: typeof data.note === "string" ? data.note : "",
+          chapter: CH_BY_ID[data.chapter] ? data.chapter : "mada",
+          createdAt: data.createdAt || 0
+        };
+      });
+      render();
+      if(current){
+        var still = photos.filter(function(p){ return p.id === current.id; })[0];
+        if(still) current = still;
+      }
+    }, function(err){
+      showNotice(message(err));
+    });
+
+    refreshMeter();
+  })();
+})();
+</script>
