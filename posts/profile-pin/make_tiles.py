@@ -28,7 +28,7 @@ PALETTE = {
 PINNED = [
     dict(name='pin_01', tone='stone', jp='RAS<sup>®</sup>　とは', en='RELEASE &amp; AWAKENING SYSTEM'),
     dict(name='pin_02', tone='sage',  jp='こんな方へ',           en='WHO IT IS FOR'),
-    dict(name='pin_03', tone='cream', jp='体験・無料相談',        en='BOOK A SESSION'),
+    dict(name='pin_03', tone='cream', jp='体験・無料相談',        en='FREE DISCOVERY SESSION'),
 ]
 
 # 通常投稿用のストック。写真と交互に並べるとグリッドが整う
