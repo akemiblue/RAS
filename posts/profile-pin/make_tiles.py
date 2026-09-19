@@ -32,18 +32,20 @@ PINNED = [
 ]
 
 # 通常投稿用のストック。写真と交互に並べるとグリッドが整う
+# size は1行に入る文字数に応じて調整（未指定なら86px）
 POSTS = [
-    dict(name='post_01', tone='cream', jp='我慢を、<br>ほどく',        en='LET IT GO'),
-    dict(name='post_02', tone='stone', jp='「私さえ<br>我慢すれば」',   en='THE STORY YOU TELL'),
-    dict(name='post_03', tone='sage',  jp='本当は<br>どうしたい？',     en='WHAT DO YOU WANT'),
-    dict(name='post_04', tone='stone', jp='眠れない<br>夜のこと',       en='ON SLEEPLESS NIGHTS'),
-    dict(name='post_05', tone='sage',  jp='がんばり方を<br>変える',     en='A DIFFERENT WAY'),
-    dict(name='post_06', tone='cream', jp='私について',                en='ABOUT ME'),
+    dict(name='post_01', tone='cream', jp='解放して<br>差し上げたい',         en='RELEASE'),
+    dict(name='post_02', tone='stone', jp='我慢することに<br>疲れてませんか？', en='TIRED OF HOLDING ON', size=70),
+    dict(name='post_03', tone='sage',  jp='本当は<br>どうしたい？',           en='WHAT DO YOU WANT'),
+    dict(name='post_04', tone='stone', jp='「眠るのが怖い」<br>と感じるとき',   en='AFRAID TO SLEEP', size=70),
+    dict(name='post_05', tone='sage',  jp='がんばり方を<br>変える',           en='A DIFFERENT WAY'),
+    dict(name='post_06', tone='cream', jp='私について',                      en='ABOUT ME'),
 ]
 
 
-def html(spec, jp_size=86):
+def html(spec):
     c = PALETTE[spec['tone']]
+    jp_size = spec.get('size', 86)
     return f"""<!doctype html><meta charset="utf-8"><style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 html,body{{width:{W}px;height:{H}px;overflow:hidden;background:{c['bg']}}}
