@@ -43,9 +43,6 @@
 https://forms.gle/mgworG3Q2kARK7Mz7
 ※Instagramではプロフィールのリンク、またはストーリーズのリンクから
 
-📞 お電話でもOK
-090-4636-0195（及川）
-
 主催：はんずあっぷ
 
 #SHOGEN #今日誰のために生きる #ペンキ画家 #ティンガティンガ
@@ -67,6 +64,5 @@ https://forms.gle/mgworG3Q2kARK7Mz7
 
 ▼申込み（〆12/16）
 https://forms.gle/mgworG3Q2kARK7Mz7
-📞 090-4636-0195（及川）
 
 #SHOGEN #大郷町 #宮城イベント

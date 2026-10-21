@@ -10,6 +10,10 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 HERE = Path(__file__).parent
 FLYER = Image.open(HERE / "assets/flyer.png").convert("RGB")
+# 電話番号は載せない: チラシ内の2か所（申込み欄・お問合せ欄）を白で隠す
+_mask = ImageDraw.Draw(FLYER)
+_mask.rectangle((748, 1836, 1125, 1906), fill=(255, 255, 255))
+_mask.rectangle((488, 1918, 1190, 1972), fill=(255, 255, 255))
 QR_CARD = Image.open(HERE / "assets/qr_card.png").convert("RGB")
 OUT = HERE / "shogen_talk_1217.mp4"
 
@@ -163,7 +167,7 @@ def scene_info(t, dur=6):
 
 
 def scene_apply(t, dur=8):
-    """26–34s: 申込み（QR・URL・電話）"""
+    """26–34s: 申込み（QR・URL）"""
     img = bg_zoom(t + 26, 30).convert("RGBA")
     a = fade(t, 0.1)
     paste_alpha(img, text_layer([("お申込みはこちら", 96, WHITE, 230)], a))
@@ -174,9 +178,7 @@ def scene_apply(t, dur=8):
     img.paste(q, (260, 480), q)
     paste_alpha(img, text_layer([(FORM_URL, 58, CREAM, 1160)], fade(t, 0.6)))
     paste_alpha(img, text_layer([("締切 12月16日（水）", 72, (255, 220, 80), 1290)], fade(t, 1.0)))
-    paste_alpha(img, text_layer([("お電話でもOK", 52, WHITE, 1440),
-                                 ("090-4636-0195（及川）", 64, WHITE, 1515)], fade(t, 1.4)))
-    paste_alpha(img, text_layer([("主催：はんずあっぷ", 42, (220, 220, 220), 1720)], fade(t, 1.8)))
+    paste_alpha(img, text_layer([("主催：はんずあっぷ", 42, (220, 220, 220), 1500)], fade(t, 1.4)))
     return img
 
 
