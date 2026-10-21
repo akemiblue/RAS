@@ -114,16 +114,16 @@ def scene_title(t):
 
 
 def scene_flyer(t, dur=8):
-    """12–20s: チラシ全体 → 日時・会場へゆっくりズーム"""
+    """12–20s: チラシ全体 → SHOGENさんの顔へゆっくりズーム"""
     img = bg_zoom(t + 12, 30).convert("RGBA")
     a = fade(t, 0.0, 0.8) * (1 - fade(t, dur - 0.6))
-    z = 1 + 0.45 * ease(max(0, (t - 3.2) / (dur - 3.8)))
+    z = 1 + 1.8 * ease(max(0, (t - 3.2) / (dur - 3.8)))
     fw, fh = int(FLYER_FIT.width * z), int(FLYER_FIT.height * z)
     fl = FLYER_FIT.resize((fw, fh), Image.BILINEAR)
-    # ズームの焦点: チラシ下部の日時〜料金欄（縦 60% あたり、横 30% あたり）
+    # ズームの焦点: 写真のSHOGENさんの顔（横 19%・縦 41% あたり）
     k = ease(max(0, (t - 3.2) / (dur - 3.8)))
-    fx = (W - fw) / 2 + k * (fw * (0.5 - 0.3))
-    fy = (H - fh) / 2 + 40 * (1 - fade(t, 0, 0.8)) + k * (fh * (0.5 - 0.74))
+    fx = (W - fw) / 2 + k * (fw * (0.5 - 0.19))
+    fy = (H - fh) / 2 + 40 * (1 - fade(t, 0, 0.8)) + k * (fh * (0.5 - 0.41))
     card = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     shadow = rounded_panel((fw, fh), (0, 0, 0, 120), 8).filter(ImageFilter.GaussianBlur(20))
     card.paste(shadow, (int(fx) + 12, int(fy) + 18), shadow)
